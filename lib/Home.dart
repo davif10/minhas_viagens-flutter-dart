@@ -29,7 +29,7 @@ class _HomeState extends State<Home> {
   }
 
   _adicionarListenerViagens() async{
-    final stream = await _db.collection("viagens")
+    final stream = _db.collection("viagens")
         .snapshots();
 
     stream.listen((dados) {
@@ -52,26 +52,18 @@ class _HomeState extends State<Home> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         backgroundColor: Color(0xff0066cc),
-        onPressed: (){
-          _adicionarLocal();
-        },
+        onPressed: () => _adicionarLocal(),
       ),
       body:StreamBuilder(
         stream: _controller.stream,
         builder: (context, snapshot){
           switch(snapshot.connectionState){
             case ConnectionState.none:
-            // TODO: Handle this case.
-              break;
             case ConnectionState.waiting:
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-              break;
+              return Center(child: CircularProgressIndicator(),);
             case ConnectionState.active:
-            // TODO: Handle this case.
-              break;
             case ConnectionState.done:
+
               QuerySnapshot querySnapshot = snapshot.data;
               List<DocumentSnapshot> viagens = querySnapshot.documents.toList();
               return Column(
