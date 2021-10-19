@@ -21,6 +21,7 @@ class _MapaState extends State<Mapa> {
       zoom: 18
   );
   Firestore _db = Firestore.instance;
+  StreamSubscription _getPositionSubscription;
 
   _onMapCreated(GoogleMapController controller){
     _controller.complete(controller);
@@ -64,14 +65,12 @@ class _MapaState extends State<Mapa> {
   _adicionarListenerLocalizacao(){
     var geolocator = Geolocator();
     var locationOptions = LocationOptions(accuracy: LocationAccuracy.high);
-    geolocator.getPositionStream(locationOptions).listen((position) {
-        setState(() {
-          _posicaoCamera = CameraPosition(
-              target: LatLng(position.latitude, position.longitude),
-              zoom: 18
-          );
-          _movimentarCamera();
-        });
+    _getPositionSubscription = geolocator.getPositionStream(locationOptions).listen((position) {
+      _posicaoCamera = CameraPosition(
+          target: LatLng(position.latitude, position.longitude),
+          zoom: 18
+      );
+      _movimentarCamera();
     });
   }
   _recuperaViagemPeloID(String idViagem) async{
@@ -114,6 +113,7 @@ class _MapaState extends State<Mapa> {
   @override
   void dispose() {
     super.dispose();
+    _getPositionSubscription.cancel();
   }
 
   @override
